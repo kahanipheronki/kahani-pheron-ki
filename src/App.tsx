@@ -1,8 +1,14 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright (C) 2026 Shogo Technologies, Inc.
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, lazy, Suspense } from 'react'
 import { motion, useScroll, useTransform, useInView, useSpring, useMotionValue, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/cn'
+import Loader from '@/components/Loader'
+import CustomCursor from '@/components/CustomCursor'
+import ScrollToTop from '@/components/ScrollToTop'
+import WhatsAppButton from '@/components/WhatsAppButton'
+import MagneticButton from '@/components/MagneticButton'
+import LazyImage from '@/components/LazyImage'
 
 /* ──────────────────────────── DATA ──────────────────────────── */
 
@@ -495,22 +501,26 @@ function Home() {
             custom={3}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <motion.a
-              href="#films"
-              whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(196, 164, 138, 0.3)' }}
-              whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center justify-center h-12 px-8 rounded-full bg-[#C4A48A] text-white text-sm font-medium hover:bg-[#B8977A] transition-colors shadow-lg"
-            >
-              Watch Our Films
-            </motion.a>
-            <motion.a
-              href="#stories"
-              whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.15)' }}
-              whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center justify-center h-12 px-8 rounded-full border border-white/30 text-white text-sm font-medium transition-all duration-300 backdrop-blur-sm"
-            >
-              Client Stories
-            </motion.a>
+            <MagneticButton>
+              <motion.a
+                href="#films"
+                whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(196, 164, 138, 0.3)' }}
+                whileTap={{ scale: 0.97 }}
+                className="inline-flex items-center justify-center h-12 px-8 rounded-full bg-[#C4A48A] text-white text-sm font-medium hover:bg-[#B8977A] transition-colors shadow-lg"
+              >
+                Watch Our Films
+              </motion.a>
+            </MagneticButton>
+            <MagneticButton>
+              <motion.a
+                href="#stories"
+                whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.15)' }}
+                whileTap={{ scale: 0.97 }}
+                className="inline-flex items-center justify-center h-12 px-8 rounded-full border border-white/30 text-white text-sm font-medium transition-all duration-300 backdrop-blur-sm"
+              >
+                Client Stories
+              </motion.a>
+            </MagneticButton>
           </motion.div>
         </motion.div>
       </motion.div>
@@ -1062,8 +1072,25 @@ function Footer() {
 
 /* ──────────────────────────── APP ───────────────────────────── */
 
+function ScrollProgress() {
+  const { scrollYProgress } = useScroll()
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 })
+  return (
+    <motion.div
+      style={{ scaleX }}
+      className="fixed top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#C4A48A] via-[#D4B89A] to-[#C4A48A] origin-left z-[60]"
+    />
+  )
+}
+
 export default function App() {
   const [scrolled, setScrolled] = useState(false)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 2200)
+    return () => clearTimeout(timer)
+  }, [])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50)
@@ -1072,7 +1099,10 @@ export default function App() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-[#FDF9F5]">
+    <div className="min-h-screen bg-[#FDF9F5] scroll-smooth">
+      <Loader isLoading={loading} />
+      <CustomCursor />
+      <ScrollProgress />
       <Navbar scrolled={scrolled} />
       <Home />
       <SectionDivider />
@@ -1084,6 +1114,8 @@ export default function App() {
       <SectionDivider />
       <Stories />
       <Footer />
+      <ScrollToTop />
+      <WhatsAppButton />
     </div>
   )
 }
