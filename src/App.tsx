@@ -772,15 +772,26 @@ function Footer() {
 
           {/* Social */}
           <div className="flex items-center gap-8">
-            {['Instagram', 'Vimeo', 'YouTube'].map((social) => (
-              <a
-                key={social}
-                href="#"
-                className="text-[11px] text-[#6B4F3A]/40 hover:text-[#C4A48A] transition-colors uppercase tracking-[0.2em]"
-              >
-                {social}
-              </a>
-            ))}
+            <a
+              href="https://www.instagram.com/kahanipheronki"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[11px] text-[#6B4F3A]/40 hover:text-[#C4A48A] transition-colors uppercase tracking-[0.2em]"
+            >
+              Instagram
+            </a>
+            <a
+              href="#"
+              className="text-[11px] text-[#6B4F3A]/40 hover:text-[#C4A48A] transition-colors uppercase tracking-[0.2em]"
+            >
+              Vimeo
+            </a>
+            <a
+              href="#"
+              className="text-[11px] text-[#6B4F3A]/40 hover:text-[#C4A48A] transition-colors uppercase tracking-[0.2em]"
+            >
+              YouTube
+            </a>
           </div>
 
           {/* Copyright */}
