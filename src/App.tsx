@@ -1,14 +1,17 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright (C) 2026 Shogo Technologies, Inc.
-import { useState, useEffect, useRef, lazy, Suspense } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, useScroll, useTransform, useInView, useSpring, useMotionValue, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/cn'
+import { ThemeProvider, useTheme } from '@/components/ThemeContext'
 import Loader from '@/components/Loader'
 import CustomCursor from '@/components/CustomCursor'
 import ScrollToTop from '@/components/ScrollToTop'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import MagneticButton from '@/components/MagneticButton'
-import LazyImage from '@/components/LazyImage'
+import ThemeToggle from '@/components/ThemeToggle'
+import FilmReel from '@/components/FilmReel'
+import Contact from '@/components/Contact'
 
 /* ──────────────────────────── DATA ──────────────────────────── */
 
@@ -267,6 +270,8 @@ function FloatingParticle({ delay, x, size }: { delay: number; x: number; size: 
 
 function Navbar({ scrolled }: { scrolled: boolean }) {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
 
   return (
     <motion.nav
@@ -276,7 +281,10 @@ function Navbar({ scrolled }: { scrolled: boolean }) {
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
         scrolled
-          ? 'bg-[#FDF9F5]/90 backdrop-blur-xl border-b border-[#C4A48A]/10'
+          ? cn(
+              'backdrop-blur-xl border-b border-[#C4A48A]/10',
+              isDark ? 'bg-[#1a1210]/90' : 'bg-[#FDF9F5]/90',
+            )
           : 'bg-transparent',
       )}
     >
@@ -315,11 +323,15 @@ function Navbar({ scrolled }: { scrolled: boolean }) {
           ))}
         </div>
 
-        <button
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden p-2 -mr-2"
-          aria-label="Toggle menu"
-        >
+        <div className="flex items-center gap-3">
+          <div className={cn(scrolled ? '' : 'text-white')}>
+            <ThemeToggle />
+          </div>
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="md:hidden p-2 -mr-2"
+            aria-label="Toggle menu"
+          >
           <div className="w-5 flex flex-col gap-1.5">
             <motion.span
               animate={mobileOpen ? { rotate: 45, y: 4 } : { rotate: 0, y: 0 }}
@@ -337,7 +349,8 @@ function Navbar({ scrolled }: { scrolled: boolean }) {
               className={cn('block h-px transition-colors duration-300', scrolled ? 'bg-[#6B4F3A]' : 'bg-white')}
             />
           </div>
-        </button>
+          </button>
+        </div>
       </div>
 
       <AnimatePresence>
@@ -375,10 +388,25 @@ function Navbar({ scrolled }: { scrolled: boolean }) {
 
 function Home() {
   const containerRef = useRef<HTMLDivElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [isMobile, setIsMobile] = useState(false)
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start start', 'end start'],
   })
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+
+  useEffect(() => {
+    if (videoRef.current && !isMobile) {
+      videoRef.current.play().catch(() => {})
+    }
+  }, [isMobile])
 
   const videoScale = useTransform(scrollYProgress, [0, 1], [1, 1.2])
   const videoOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
@@ -399,14 +427,16 @@ function Home() {
         className="absolute inset-0"
       >
         <video
-          autoPlay
+          ref={videoRef}
+          autoPlay={!isMobile}
           muted
           loop
           playsInline
-          preload="auto"
+          preload={isMobile ? 'none' : 'auto'}
+          poster="/A_V_KPK_9.jpg"
           className="absolute inset-0 w-full h-full object-cover"
         >
-          <source src="/wedding-bg.mp4" type="video/mp4" />
+          {!isMobile && <source src="/wedding-bg.mp4" type="video/mp4" />}
         </video>
       </motion.div>
 
@@ -1084,8 +1114,18 @@ function ScrollProgress() {
 }
 
 export default function App() {
+  return (
+    <ThemeProvider>
+      <AppInner />
+    </ThemeProvider>
+  )
+}
+
+function AppInner() {
   const [scrolled, setScrolled] = useState(false)
   const [loading, setLoading] = useState(true)
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 2200)
@@ -1099,7 +1139,7 @@ export default function App() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-[#FDF9F5] scroll-smooth">
+    <div className={cn('min-h-screen scroll-smooth transition-colors duration-500', isDark ? 'bg-[#1a1210] text-white' : 'bg-[#FDF9F5] text-[#3D2E1F]')}>
       <Loader isLoading={loading} />
       <CustomCursor />
       <ScrollProgress />
@@ -1108,11 +1148,15 @@ export default function App() {
       <SectionDivider />
       <About />
       <SectionDivider />
+      <FilmReel />
+      <SectionDivider />
       <Films />
       <SectionDivider />
       <Stills />
       <SectionDivider />
       <Stories />
+      <SectionDivider />
+      <Contact />
       <Footer />
       <ScrollToTop />
       <WhatsAppButton />
