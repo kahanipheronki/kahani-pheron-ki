@@ -6,12 +6,17 @@ import { cn } from '@/lib/cn'
 import { ThemeProvider, useTheme } from '@/components/ThemeContext'
 import Loader from '@/components/Loader'
 import CustomCursor from '@/components/CustomCursor'
+import CursorTrail from '@/components/CursorTrail'
 import ScrollToTop from '@/components/ScrollToTop'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import MagneticButton from '@/components/MagneticButton'
 import ThemeToggle from '@/components/ThemeToggle'
 import FilmReel from '@/components/FilmReel'
 import Contact from '@/components/Contact'
+import VideoLightbox from '@/components/VideoLightbox'
+import ImageLightbox from '@/components/ImageLightbox'
+import Typewriter from '@/components/Typewriter'
+import CinematicReveal from '@/components/CinematicReveal'
 
 /* ──────────────────────────── DATA ──────────────────────────── */
 
@@ -522,8 +527,16 @@ function Home() {
             custom={2}
             className="text-base md:text-lg text-white/70 max-w-xl mx-auto mb-14 leading-relaxed font-light drop-shadow"
           >
-            Every love story deserves to be told with heart. Cinematic films
-            and fine art photography for your most cherished moments.
+            Every love story deserves to be told with heart.{' '}
+            <Typewriter
+              texts={[
+                'Cinematic films for your most cherished moments.',
+                'Fine art photography with soul and emotion.',
+                'Destination weddings across the globe.',
+                'Your story, captured forever.',
+              ]}
+              className="text-[#D4B89A]"
+            />
           </motion.p>
 
           <motion.div
@@ -720,6 +733,10 @@ function FilmCard({ film, index }: { film: typeof FILMS[0]; index: number }) {
     y.set(0)
   }
 
+  function openLightbox() {
+    window.dispatchEvent(new CustomEvent('open-video-lightbox', { detail: { src: '', title: film.title } }))
+  }
+
   return (
     <motion.div
       variants={scaleUp}
@@ -734,6 +751,7 @@ function FilmCard({ film, index }: { film: typeof FILMS[0]; index: number }) {
         onMouseMove={handleMouse}
         onMouseLeave={handleMouseLeave}
         whileHover={{ scale: 1.03 }}
+        onClick={openLightbox}
         className="group relative rounded-xl overflow-hidden cursor-pointer"
       >
         <div className={cn('relative', film.aspect)}>
@@ -814,6 +832,11 @@ function Films() {
 /* ──────────────────────── STILLS ───────────────────────────── */
 
 function Stills() {
+  function openStillsLightbox(index: number) {
+    const imgs = STILLS.map(s => ({ src: `/A_V_KPK_${index + 1}.jpg`, alt: s.title }))
+    window.dispatchEvent(new CustomEvent('open-image-lightbox', { detail: { images: imgs.length ? imgs : [{ src: '', alt: 'Portfolio' }], index: 0 } }))
+  }
+
   return (
     <section id="stills" className="py-28 md:py-36 bg-[#FDF9F5] overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
@@ -1142,20 +1165,37 @@ function AppInner() {
     <div className={cn('min-h-screen scroll-smooth transition-colors duration-500', isDark ? 'bg-[#1a1210] text-white' : 'bg-[#FDF9F5] text-[#3D2E1F]')}>
       <Loader isLoading={loading} />
       <CustomCursor />
+      <CursorTrail />
       <ScrollProgress />
+      <VideoLightbox />
+      <ImageLightbox />
       <Navbar scrolled={scrolled} />
       <Home />
-      <SectionDivider />
-      <About />
-      <SectionDivider />
+      <CinematicReveal>
+        <SectionDivider />
+      </CinematicReveal>
+      <CinematicReveal>
+        <About />
+      </CinematicReveal>
+      <CinematicReveal>
+        <SectionDivider />
+      </CinematicReveal>
       <FilmReel />
-      <SectionDivider />
+      <CinematicReveal>
+        <SectionDivider />
+      </CinematicReveal>
       <Films />
-      <SectionDivider />
+      <CinematicReveal>
+        <SectionDivider />
+      </CinematicReveal>
       <Stills />
-      <SectionDivider />
+      <CinematicReveal>
+        <SectionDivider />
+      </CinematicReveal>
       <Stories />
-      <SectionDivider />
+      <CinematicReveal>
+        <SectionDivider />
+      </CinematicReveal>
       <Contact />
       <Footer />
       <ScrollToTop />
