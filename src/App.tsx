@@ -67,7 +67,19 @@ const FILMS = [
   },
 ]
 
-const STILLS: { title: string; span: string; gradient: string; src?: string }[] = []
+const STILLS = [
+  { title: '', span: 'col-span-1 row-span-2', src: '/stills/still-1.jpg' },
+  { title: '', span: 'col-span-1 row-span-1', src: '/stills/still-3.jpg' },
+  { title: '', span: 'col-span-1 row-span-1', src: '/stills/still-4.jpg' },
+  { title: '', span: 'col-span-1 row-span-2', src: '/stills/still-2.jpg' },
+  { title: '', span: 'col-span-1 row-span-1', src: '/stills/still-5.jpg' },
+  { title: '', span: 'col-span-1 row-span-1', src: '/stills/still-6.jpg' },
+  { title: '', span: 'col-span-1 row-span-1', src: '/stills/still-7.jpg' },
+  { title: '', span: 'col-span-1 row-span-1', src: '/stills/still-8.jpg' },
+  { title: '', span: 'col-span-1 row-span-2', src: '/stills/still-9.jpg' },
+  { title: '', span: 'col-span-1 row-span-1', src: '/stills/still-10.jpg' },
+  { title: '', span: 'col-span-1 row-span-1', src: '/stills/still-11.jpg' },
+]
 
 const STORIES = [
   {
@@ -806,8 +818,8 @@ function Films() {
 
 function Stills() {
   function openStillsLightbox(index: number) {
-    const imgs = STILLS.map(s => ({ src: `/A_V_KPK_${index + 1}.jpg`, alt: s.title }))
-    window.dispatchEvent(new CustomEvent('open-image-lightbox', { detail: { images: imgs.length ? imgs : [{ src: '', alt: 'Portfolio' }], index: 0 } }))
+    const imgs = STILLS.filter(s => s.src).map(s => ({ src: s.src!, alt: 'Kahani Pheron Ki' }))
+    window.dispatchEvent(new CustomEvent('open-image-lightbox', { detail: { images: imgs, index } }))
   }
 
   return (
@@ -837,53 +849,42 @@ function Stills() {
           viewport={{ once: true, margin: '-60px' }}
           className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 auto-rows-[180px] md:auto-rows-[220px]"
         >
-          {STILLS.length === 0 ? (
+          {STILLS.map((still, i) => (
             <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              className="col-span-full flex items-center justify-center h-48 text-[#6B4F3A]/30 text-sm"
+              key={i}
+              variants={scaleUp}
+              custom={i}
+              className={still.span}
             >
-              Stills coming soon...
-            </motion.div>
-          ) : (
-            STILLS.map((still, i) => (
               <motion.div
-                key={still.title}
-                variants={scaleUp}
-                custom={i}
-                className={still.span}
+                whileHover={{ scale: 1.03 }}
+                transition={{ duration: 0.4 }}
+                onClick={() => openStillsLightbox(i)}
+                className="group relative h-full rounded-xl overflow-hidden cursor-pointer"
               >
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.4 }}
-                  className="group relative h-full rounded-xl overflow-hidden cursor-pointer"
-                >
-                  {still.src ? (
-                    <img src={still.src} alt={still.title} className="absolute inset-0 w-full h-full object-cover" />
-                  ) : (
-                    <div className={cn('absolute inset-0 bg-gradient-to-br transition-all duration-700', still.gradient)} />
-                  )}
+                {still.src ? (
+                  <img src={still.src} alt={still.title || 'Portfolio'} loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                ) : (
+                  <div className={cn('absolute inset-0 bg-gradient-to-br transition-all duration-700', still.gradient)} />
+                )}
 
-                  <motion.div
-                    className="absolute inset-0"
-                    initial={{ opacity: 0 }}
-                    whileHover={{ opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                    style={{ background: 'linear-gradient(145deg, rgba(255,255,255,0.18) 0%, transparent 40%)' }}
-                  />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
+                {still.title && (
                   <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <span className="text-[#3D2E1F] text-sm font-medium drop-shadow-sm">
-                      {still.title}
-                    </span>
+                    <span className="text-white text-sm font-medium drop-shadow-sm">{still.title}</span>
                   </div>
+                )}
 
-                  <div className="absolute top-3 right-3 w-0 h-0 group-hover:w-4 group-hover:h-4 border-t border-r border-[#3D2E1F]/20 transition-all duration-300" />
-                </motion.div>
+                {/* Hover expand icon */}
+                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                  </div>
+                </div>
               </motion.div>
-            ))
-          )}
+            </motion.div>
+          ))}
         </motion.div>
       </div>
     </section>
