@@ -67,18 +67,7 @@ const FILMS = [
   },
 ]
 
-const STILLS = [
-  { title: 'Morning Light', span: 'col-span-1 row-span-2', gradient: 'from-[#C4A48A]/60 via-[#D4B89A]/40 to-[#B8977A]/70' },
-  { title: 'Whisper', span: 'col-span-1 row-span-1', gradient: 'from-[#E8D5C4]/60 via-[#D4B89A]/40 to-[#C4A48A]/70' },
-  { title: 'Tender', span: 'col-span-1 row-span-1', gradient: 'from-[#D4B89A]/70 via-[#C4A48A]/40 to-[#E8D5C4]/60' },
-  { title: 'Ethereal', span: 'col-span-1 row-span-2', gradient: 'from-[#B8977A]/60 via-[#C4A48A]/40 to-[#A68B6B]/70' },
-  { title: 'Solitude', span: 'col-span-1 row-span-1', gradient: 'from-[#C4A48A]/50 via-[#E8D5C4]/40 to-[#D4B89A]/70' },
-  { title: 'Dance', span: 'col-span-1 row-span-1', gradient: 'from-[#D4B89A]/60 via-[#B8977A]/40 to-[#C4A48A]/70' },
-  { title: 'Reverie', span: 'col-span-1 row-span-1', gradient: 'from-[#E8D5C4]/70 via-[#C4A48A]/40 to-[#D4B89A]/60' },
-  { title: 'Still', span: 'col-span-1 row-span-1', gradient: 'from-[#B8977A]/50 via-[#D4B89A]/40 to-[#C4A48A]/70' },
-  { title: 'Promise', span: 'col-span-1 row-span-2', gradient: 'from-[#C4A48A]/70 via-[#E8D5C4]/40 to-[#B8977A]/60' },
-  { title: 'Bloom', span: 'col-span-1 row-span-1', gradient: 'from-[#D4B89A]/50 via-[#C4A48A]/40 to-[#E8D5C4]/70' },
-]
+const STILLS: { title: string; span: string; gradient: string; src?: string }[] = []
 
 const STORIES = [
   {
@@ -668,22 +657,6 @@ function About() {
             viewport={{ once: true, margin: '-80px' }}
             className="space-y-6"
           >
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.4 }}
-              className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gradient-to-br from-[#E8D5C4] via-[#D4B89A] to-[#C4A48A] shadow-xl"
-            >
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-16 h-16 rounded-full border border-white/30 flex items-center justify-center mx-auto mb-3">
-                    <div className="w-5 h-5 rounded-full bg-white/40" />
-                  </div>
-                  <span className="text-[10px] text-white/60 uppercase tracking-widest">
-                    Studio Portrait
-                  </span>
-                </div>
-              </div>
-            </motion.div>
             <div className="grid grid-cols-3 gap-4">
               {stats.map((stat, i) => (
                 <motion.div
@@ -864,49 +837,53 @@ function Stills() {
           viewport={{ once: true, margin: '-60px' }}
           className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 auto-rows-[180px] md:auto-rows-[220px]"
         >
-          {STILLS.map((still, i) => (
+          {STILLS.length === 0 ? (
             <motion.div
-              key={still.title}
-              variants={scaleUp}
-              custom={i}
-              className={still.span}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="col-span-full flex items-center justify-center h-48 text-[#6B4F3A]/30 text-sm"
             >
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.4 }}
-                className="group relative h-full rounded-xl overflow-hidden cursor-pointer"
-              >
-                <div className={cn('absolute inset-0 bg-gradient-to-br transition-all duration-700', still.gradient)} />
-
-                {/* Light streak on hover */}
-                <motion.div
-                  className="absolute inset-0"
-                  initial={{ opacity: 0 }}
-                  whileHover={{ opacity: 1 }}
-                  transition={{ duration: 0.5 }}
-                  style={{ background: 'linear-gradient(145deg, rgba(255,255,255,0.18) 0%, transparent 40%)' }}
-                />
-
-                <motion.div
-                  className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-all duration-500"
-                />
-
-                <motion.div
-                  className="absolute bottom-0 left-0 right-0 p-4"
-                  initial={{ y: 10, opacity: 0 }}
-                  whileHover={{ y: 0, opacity: 1 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <span className="text-[#3D2E1F] text-sm font-medium drop-shadow-sm">
-                    {still.title}
-                  </span>
-                </motion.div>
-
-                {/* Corner detail */}
-                <div className="absolute top-3 right-3 w-0 h-0 group-hover:w-4 group-hover:h-4 border-t border-r border-[#3D2E1F]/20 transition-all duration-300" />
-              </motion.div>
+              Stills coming soon...
             </motion.div>
-          ))}
+          ) : (
+            STILLS.map((still, i) => (
+              <motion.div
+                key={still.title}
+                variants={scaleUp}
+                custom={i}
+                className={still.span}
+              >
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.4 }}
+                  className="group relative h-full rounded-xl overflow-hidden cursor-pointer"
+                >
+                  {still.src ? (
+                    <img src={still.src} alt={still.title} className="absolute inset-0 w-full h-full object-cover" />
+                  ) : (
+                    <div className={cn('absolute inset-0 bg-gradient-to-br transition-all duration-700', still.gradient)} />
+                  )}
+
+                  <motion.div
+                    className="absolute inset-0"
+                    initial={{ opacity: 0 }}
+                    whileHover={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                    style={{ background: 'linear-gradient(145deg, rgba(255,255,255,0.18) 0%, transparent 40%)' }}
+                  />
+
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <span className="text-[#3D2E1F] text-sm font-medium drop-shadow-sm">
+                      {still.title}
+                    </span>
+                  </div>
+
+                  <div className="absolute top-3 right-3 w-0 h-0 group-hover:w-4 group-hover:h-4 border-t border-r border-[#3D2E1F]/20 transition-all duration-300" />
+                </motion.div>
+              </motion.div>
+            ))
+          )}
         </motion.div>
       </div>
     </section>
